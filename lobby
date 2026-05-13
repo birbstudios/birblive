@@ -1,1 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BirbKit | Lobby</title>
+    <style>
+        /* --- FRUTIGER AERO & GLASS THEME --- */
+        :root {
+            --glass: rgba(255, 255, 255, 0.25);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --aero-blue: #0080ff;
+            --aero-green: #40ff40;
+            --text-glow: 0 0 8px rgba(255, 255, 255, 0.8);
+        }
 
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            /* Classic Aero Gradient Background */
+            background: radial-gradient(circle at top left, #2af598 0%, #009efd 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* Ambient Background Bubbles */
+        .bubble {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            z-index: 0;
+            animation: float 20s infinite linear;
+        }
+
+        /* Main Glass Container */
+        .lobby-panel {
+            position: relative;
+            z-index: 10;
+            width: 85vw;
+            height: 80vh;
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15), inset 0 0 20px rgba(255,255,255,0.2);
+            display: flex;
+            flex-direction: column;
+            padding: 40px;
+        }
+
+        /* Header Section */
+        .lobby-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .title-area h1 {
+            color: white;
+            font-size: 3rem;
+            margin: 0;
+            text-shadow: var(--text-glow);
+            font-style: italic;
+            letter-spacing: -1px;
+        }
+
+        .game-code-box {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px 30px;
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.3);
+            text-align: center;
+        }
+
+        .code-label { color: #e0e0e0; font-size: 0.8rem; text-transform: uppercase; }
+        .code-value { color: white; font-size: 2.2rem; font-weight: 800; letter-spacing: 5px; }
+
+        /* Player Area */
+        .player-wall {
+            flex-grow: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            margin: 20px 0;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 15px;
+            overflow-y: auto;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        /* The "Birb" Cards */
+        .birb-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.1) 100%);
+            border: 1px solid var(--glass-border);
+            border-radius: 18px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: sprout 0.4s ease-out;
+        }
+
+        .birb-card:hover {
+            transform: translateY(-5px) scale(1.05);
+            background: rgba(255,255,255,0.5);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .birb-avatar { font-size: 2.5rem; filter: drop-shadow(0 4px 4px rgba(0,0,0,0.1)); }
+        .birb-name { display: block; color: white; font-weight: 600; margin-top: 8px; font-size: 0.9rem; text-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+
+        /* Controls / Buttons */
+        .footer-actions {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .aero-btn {
+            padding: 18px 50px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        /* Glossy Overlay for Buttons */
+        .aero-btn::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 50%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.4), transparent);
+        }
+
+        .btn-join { background: #ffcc00; color: #443300; }
+        .btn-start { background: var(--aero-green); color: #004400; }
+
+        .aero-btn:hover {
+            transform: scale(1.05);
+            filter: brightness(1.1);
+        }
+
+        .aero-btn:active { transform: scale(0.95); }
+
+        /* Animations */
+        @keyframes float {
+            from { transform: translateY(100vh) translateX(0); }
+            to { transform: translateY(-100px) translateX(50px); }
+        }
+
+        @keyframes sprout {
+            0% { transform: scale(0.5) rotate(-10deg); opacity: 0; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        /* Custom Scrollbar */
+        .player-wall::-webkit-scrollbar { width: 8px; }
+        .player-wall::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+    <!-- Background Decoration -->
+    <div class="bubble" style="width: 80px; height: 80px; left: 10%; animation-duration: 25s;"></div>
+    <div class="bubble" style="width: 120px; height: 120px; left: 80%; animation-duration: 18s;"></div>
+    <div class="bubble" style="width: 40px; height: 40px; left: 50%; animation-duration: 12s;"></div>
+
+    <div class="lobby-panel">
+        <header class="lobby-header">
+            <div class="title-area">
+                <h1>BirbKit</h1>
+            </div>
+            <div class="game-code-box">
+                <div class="code-label">Join at BirbKit.com</div>
+                <div class="code-value" id="gameCode">------</div>
+            </div>
+        </header>
+
+        <div class="player-wall" id="playerWall">
+            <!-- Birbs land here -->
+        </div>
+
+        <footer class="footer-actions">
+            <button class="aero-btn btn-join" onclick="addBirb()">Add a Birb</button>
+            <button class="aero-btn btn-start" onclick="beginFlight()">Start Flight</button>
+        </footer>
+    </div>
+
+    <script>
+        const wall = document.getElementById('playerWall');
+        const birbTypes = ['🦜', '🦢', '🦩', '🕊️', '🦅', '🦆', '🦉', '🦚', '🐧', '🐥'];
+        const birbNames = ['Storm', 'Dexter', 'Cloud', 'Mango', 'Sky', 'Echo', 'Pip', 'Sunny', 'Feathers', 'Zippy'];
+
+        function generateCode() {
+            const code = Math.floor(100000 + Math.random() * 900000);
+            document.getElementById('gameCode').innerText = code;
+        }
+
+        function addBirb() {
+            const randomIcon = birbTypes[Math.floor(Math.random() * birbTypes.length)];
+            const randomName = birbNames[Math.floor(Math.random() * birbNames.length)] + " " + (wall.children.length + 1);
+
+            const card = document.createElement('div');
+            card.className = 'birb-card';
+            card.innerHTML = `
+                <div class="birb-avatar">${randomIcon}</div>
+                <span class="birb-name">${randomName}</span>
+            `;
+            
+            wall.appendChild(card);
+            // Auto-scroll to bottom when new players join
+            wall.scrollTop = wall.scrollHeight;
+        }
+
+        function beginFlight() {
+            if (wall.children.length === 0) {
+                alert("The flock is empty! Add some birbs first.");
+                return;
+            }
+            alert("Preparing for takeoff with " + wall.children.length + " birbs!");
+        }
+
+        // Initialize
+        generateCode();
+    </script>
+</body>
+</html>
